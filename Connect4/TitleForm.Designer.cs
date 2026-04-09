@@ -1,6 +1,6 @@
 ﻿namespace Connect4
 {
-    partial class Connect4MainForm
+    partial class TitleForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -70,6 +70,9 @@
             btnStart.TabIndex = 2;
             btnStart.Text = "▶ Начать игру";
             btnStart.UseVisualStyleBackColor = false;
+            btnStart.Click += btnStart_Click;
+            btnStart.MouseEnter += btnStart_MouseEnter;
+            btnStart.MouseLeave += btnStart_MouseLeave;
 
             // 
             // btnAbout
@@ -86,6 +89,9 @@
             btnAbout.TabIndex = 3;
             btnAbout.Text = "ℹ Об игре";
             btnAbout.UseVisualStyleBackColor = false;
+            btnAbout.Click += btnAbout_Click;
+            btnAbout.MouseEnter += btnAbout_MouseEnter;
+            btnAbout.MouseLeave += btnAbout_MouseLeave;
 
             // 
             // pnlFooter

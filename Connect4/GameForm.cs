@@ -1,99 +1,80 @@
-﻿using System;
+﻿using Connect4.Core;
+using System;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Connect4
 {
     public partial class GameForm : Form
     {
-        private int _currentPlayer = 1; // 1 = красный, 2 = жёлтый
-        private bool _gameOver = false;
-
-        // Цвета для индикатора хода
-        private static readonly Color Red = Color.FromArgb(220, 60, 60);
-        private static readonly Color Yellow = Color.FromArgb(240, 200, 50);
+        private readonly GameEngine _game;
+        private readonly Color _red = Color.FromArgb(220, 60, 60);
+        private readonly Color _yellow = Color.FromArgb(240, 200, 50);
 
         public GameForm()
         {
             InitializeComponent();
-            ResetGame();
+            _game = new GameEngine { TurnTimeLimit = 15 };
+            _game.TurnChanged += OnTurnChanged;
+            _game.GameFinished += OnGameFinished;
+            _game.TimeWarning += OnTimeWarning;
+
+            _uiTimer = new System.Windows.Forms.Timer { Interval = 1000, Enabled = true };
+            _uiTimer.Tick += (s, e) => { _game.Tick(); UpdateTimerLabel(); };
+
+            _game.StartNewGame();
+            boardPanel.Render(_game.Board);
         }
 
-        private void ResetGame()
+        private void UpdateTimerLabel()
         {
-            boardPanel.Reset();
-            _currentPlayer = 1;
-            _gameOver = false;
-            UpdateStatus("Ход: Красный", Red);
-            UpdateTurnIndicator(1);
+            lblTimer.Text = $"⏱ {_game.TimeLeft}с";
+            lblTimer.ForeColor = _game.TimeLeft <= 5 ? Color.FromArgb(180, 50, 50) : Color.FromArgb(45, 85, 165);
         }
 
-        private void UpdateStatus(string message, Color? color = null)
-        {
-            lblStatus.Text = message;
-            if (color.HasValue)
-                lblStatus.ForeColor = color.Value;
-        }
-
-        private void UpdateTurnIndicator(int player)
+        private void OnTurnChanged(int player)
         {
             lblTurn.Text = player == 1 ? "● Ход: Красный" : "● Ход: Жёлтый";
-            lblTurn.ForeColor = player == 1 ? Red : Yellow;
+            lblTurn.ForeColor = player == 1 ? _red : _yellow;
+            UpdateTimerLabel();
         }
 
-        // Обработчик клика по полю
+        private void OnTimeWarning(int sec)
+            => MessageBox.Show($"Осталось {sec} секунд!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+        private void OnGameFinished(GameResult result)
+        {
+            _uiTimer.Stop();
+            string msg = result switch
+            {
+                GameResult.RedWins => "🏆 Победа Красных!",
+                GameResult.YellowWins => "🏆 Победа Жёлтых!",
+                GameResult.Draw => "🤝 Ничья!",
+                GameResult.Timeout => "⏰ Время вышло! Победа соперника.",
+                _ => "Игра окончена."
+            };
+            MessageBox.Show(msg, "Результат", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         private void boardPanel_MouseClick(object sender, MouseEventArgs e)
         {
-            if (_gameOver) return;
+            if (_game.IsGameOver) return;
+            int col = boardPanel.GetColumnAtPoint(e.Location);
+            if (col < 0) return;
 
-            int column = boardPanel.GetColumnAtPoint(e.Location);
-            if (column < 0) return;
-
-            int row = boardPanel.DropChip(column, _currentPlayer);
-            if (row < 0)
-            {
-                // Колонка заполнена — можно добавить визуальный фидбек
-                return;
-            }
-
-            _currentPlayer = _currentPlayer == 1 ? 2 : 1;
-            UpdateTurnIndicator(_currentPlayer);
-            UpdateStatus("Игра идёт...");
+            var res = _game.TryDrop(col);
+            if (res != GameResult.InvalidMove)
+                boardPanel.Render(_game.Board);
         }
 
-        // Перерисовка при изменении размера поля
-        private void boardPanel_Resize(object sender, EventArgs e)
-        {
-            boardPanel.Invalidate(); // Перерисовать поле
-        }
-
-        // Кнопка "В меню"
-        private void btnBack_Click(object sender, EventArgs e)
-        {
-            this.Close(); // MainForm покажется, если был скрыт через Hide()
-        }
-
-        // Кнопка "Новая игра"
         private void btnRestart_Click(object sender, EventArgs e)
         {
-            if (_gameOver || MessageBox.Show("Начать новую игру?", "Подтверждение",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                ResetGame();
-            }
+            _game.StartNewGame();
+            boardPanel.Render(_game.Board);
+            _uiTimer.Start();
         }
 
-        // TODO: Заготовки для будущей логики
-        private bool CheckWin(int lastRow, int lastCol)
-        {
-            // TODO: проверка 4 направлений от последнего хода
-            return false;
-        }
-
-        private bool IsBoardFull()
-        {
-            // TODO: проверка, заполнено ли поле
-            return false;
-        }
+        private void btnBack_Click(object sender, EventArgs e) => this.Close();
     }
 }

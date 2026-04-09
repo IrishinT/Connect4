@@ -28,11 +28,144 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "GameForm";
+            pnlTop = new Panel();
+            btnBack = new Button();
+            lblTurn = new Label();
+            btnRestart = new Button();
+            boardPanel = new BoardPanel();
+            pnlStatus = new Panel();
+            lblStatus = new Label();
+            pnlTop.SuspendLayout();
+            pnlStatus.SuspendLayout();
+            SuspendLayout();
+
+            // 
+            // pnlTop
+            // 
+            pnlTop.BackColor = Color.White;
+            pnlTop.Controls.Add(btnBack);
+            pnlTop.Controls.Add(lblTurn);
+            pnlTop.Controls.Add(btnRestart);
+            pnlTop.Dock = DockStyle.Top;
+            pnlTop.Location = new Point(0, 0);
+            pnlTop.Name = "pnlTop";
+            pnlTop.Padding = new Padding(10);
+            pnlTop.Size = new Size(900, 60);
+            pnlTop.TabIndex = 0;
+            pnlTop.MinimumSize = new Size(0, 60);
+
+            // 
+            // btnBack
+            // 
+            btnBack.Anchor = AnchorStyles.Left;
+            btnBack.BackColor = Color.FromArgb(108, 117, 125);
+            btnBack.FlatAppearance.BorderSize = 0;
+            btnBack.FlatStyle = FlatStyle.Flat;
+            btnBack.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            btnBack.ForeColor = Color.White;
+            btnBack.Location = new Point(10, 15);
+            btnBack.Name = "btnBack";
+            btnBack.Size = new Size(120, 30);
+            btnBack.TabIndex = 0;
+            btnBack.Text = "← В меню";
+            btnBack.UseVisualStyleBackColor = false;
+            btnBack.Click += btnBack_Click;
+
+            // 
+            // lblTurn
+            // 
+            lblTurn.Anchor = AnchorStyles.None;
+            lblTurn.AutoSize = true;
+            lblTurn.Font = new Font("Segoe UI", 14F, FontStyle.Bold, GraphicsUnit.Point);
+            lblTurn.ForeColor = Color.FromArgb(45, 85, 165);
+            lblTurn.Location = new Point(320, 18);
+            lblTurn.Name = "lblTurn";
+            lblTurn.Size = new Size(260, 32);
+            lblTurn.TabIndex = 1;
+            lblTurn.Text = "● Ход: Красный";
+            lblTurn.TextAlign = ContentAlignment.MiddleCenter;
+
+            // 
+            // btnRestart
+            // 
+            btnRestart.Anchor = AnchorStyles.Right;
+            btnRestart.BackColor = Color.FromArgb(45, 125, 85);
+            btnRestart.FlatAppearance.BorderSize = 0;
+            btnRestart.FlatStyle = FlatStyle.Flat;
+            btnRestart.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            btnRestart.ForeColor = Color.White;
+            btnRestart.Location = new Point(770, 15);
+            btnRestart.Name = "btnRestart";
+            btnRestart.Size = new Size(120, 30);
+            btnRestart.TabIndex = 2;
+            btnRestart.Text = "🔄 Новая игра";
+            btnRestart.UseVisualStyleBackColor = false;
+            btnRestart.Click += btnRestart_Click;
+
+            // 
+            // boardPanel
+            // 
+            boardPanel.BackColor = Color.FromArgb(30, 60, 120); // Тёмно-синий фон доски
+            boardPanel.Dock = DockStyle.Fill;
+            boardPanel.Location = new Point(0, 60);
+            boardPanel.Name = "boardPanel";
+            boardPanel.Size = new Size(900, 340);
+            boardPanel.TabIndex = 1;
+            boardPanel.Resize += boardPanel_Resize;
+            boardPanel.MouseClick += boardPanel_MouseClick;
+
+            // 
+            // pnlStatus
+            // 
+            pnlStatus.BackColor = Color.FromArgb(245, 245, 245);
+            pnlStatus.Controls.Add(lblStatus);
+            pnlStatus.Dock = DockStyle.Bottom;
+            pnlStatus.Location = new Point(0, 400);
+            pnlStatus.Name = "pnlStatus";
+            pnlStatus.Padding = new Padding(10);
+            pnlStatus.Size = new Size(900, 50);
+            pnlStatus.TabIndex = 2;
+            pnlStatus.MinimumSize = new Size(0, 50);
+
+            // 
+            // lblStatus
+            // 
+            lblStatus.AutoSize = true;
+            lblStatus.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            lblStatus.ForeColor = Color.FromArgb(45, 85, 165);
+            lblStatus.Location = new Point(10, 15);
+            lblStatus.Name = "lblStatus";
+            lblStatus.Size = new Size(110, 25);
+            lblStatus.TabIndex = 0;
+            lblStatus.Text = "Игра идёт...";
+
+            // 
+            // GameForm
+            // 
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(900, 450);
+            Controls.Add(boardPanel);
+            Controls.Add(pnlStatus);
+            Controls.Add(pnlTop);
+            MinimumSize = new Size(700, 450);
+            Name = "GameForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Connect Four — Игра";
+            pnlTop.ResumeLayout(false);
+            pnlTop.PerformLayout();
+            pnlStatus.ResumeLayout(false);
+            pnlStatus.PerformLayout();
+            ResumeLayout(false);
         }
+
+        private Panel pnlTop;
+        private Button btnBack;
+        private Label lblTurn;
+        private Button btnRestart;
+        private BoardPanel boardPanel;  // 🔹 Кастомный контрол для поля
+        private Panel pnlStatus;
+        private Label lblStatus;
 
         #endregion
     }
